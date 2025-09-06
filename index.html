@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Student Marksheet</title>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+SC:wght@700&display=swap" rel="stylesheet" />
+
+<!-- jsPDF and html2canvas libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<style>
+  body {
+    font-family: 'Cormorant SC', serif;
+    margin: 0; padding: 0 10px;
+    background: #f9f9f9;
+    color: #333;
+  }
+  h1, h2 {
+    text-align: center;
+  }
+  #main, #main1 {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 6px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  #main {
+    background: #fff;
+  }
+  /* ✅ Sky-blue background for result page */
+  #main1 {
+    background: skyblue;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  th, td {
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+  }
+  input[type=text], input[type=number], input[type=date] {
+    width: 100%;
+    padding: 5px 7px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 700;
+    margin-right: 10px;
+  }
+  button:hover {
+    background: #0056b3;
+  }
+
+  /* Responsive styles */
+  #info table tr {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  #info table tr th, #info table tr td {
+    flex: 1 1 45%;
+    min-width: 140px;
+    margin-bottom: 8px;
+  }
+  @media (max-width: 600px) {
+    #info table tr {
+      flex-direction: column;
+    }
+    #info table tr th, #info table tr td {
+      flex: 1 1 100%;
+    }
+    button {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+  }
+</style>
+</head>
+<body>
+<div id="main">
+  <h1>STUDENT MARKSHEET</h1>
+  <h1>code mit</h1>
+  <div id="info">
+    <h2>STUDENT INFORMATION:</h2>
+    <table>
+      <tr>
+        <th>Name :</th>
+        <td><input type="text" name="fname" id="fname" /></td>
+        <th>Reg. No / Roll No:</th>
+        <td><input type="number" name="rollno" id="rollno" /></td>
+      </tr>
+      <tr>
+        <th>Father Name :</th>
+        <td><input type="text" name="faname" id="faname" /></td>
+        <th>Date of Birth :</th>
+        <td><input type="date" name="bod" id="bod" /></td>
+      </tr>
+      <tr>
+        <th>Institute Name :</th>
+        <td><input type="text" name="iname" id="iname" /></td>
+        <th>Batch :</th>
+        <td><input type="text" name="batch" id="batch" /></td>
+      </tr>
+      <tr>
+        <th>Exam Month-year :</th>
+        <td><input type="text" name="ename" id="ename" /></td>
+        <th>Seat No.:</th>
+        <td><input type="text" name="seat" id="seat" /></td>
+      </tr>
+    </table>
+  </div>
+  <div id="mark">
+    <h2>SUBJECTS MARKS</h2>
+    <table>
+      <tr>
+        <th>SR. NO.</th>
+        <th>SUBJECT NAME</th>
+        <th>PASSING MARKS</th>
+        <th>MARK OBTAINED</th>
+      </tr>
+      <tr>
+        <td>1.</td>
+        <td>FRONT-END DEVELOPMENT</td>
+        <td>100/35</td>
+        <td><input type="number" id="fend" min="0" max="100" /></td>
+      </tr>
+      <tr>
+        <td>2.</td>
+        <td>BACK-END DEVELOPMENT</td>
+        <td>100/35</td>
+        <td><input type="number" id="bend" min="0" max="100" /></td>
+      </tr>
+      <tr>
+        <td>3.</td>
+        <td>DATA BASE</td>
+        <td>100/35</td>
+        <td><input type="number" id="dbase" min="0" max="100" /></td>
+      </tr>
+      <tr>
+        <td>4.</td>
+        <td>DEVOPS</td>
+        <td>100/35</td>
+        <td><input type="number" id="devops" min="0" max="100" /></td>
+      </tr>
+      <tr>
+        <td>5.</td>
+        <td>MOBILE APP DEV</td>
+        <td>100/35</td>
+        <td><input type="number" id="mobile" min="0" max="100" /></td>
+      </tr>
+    </table>
+  </div>
+  <div style="text-align:center;">
+    <button onclick="submit()">SUBMIT</button>
+    <button onclick="reset()">RESET</button>
+    <button onclick="downloadPDF()">DOWNLOAD PDF</button>
+  </div>
+</div>
+<div id="main1" style="display:none;">
+  <h1>STUDENT MARKSHEET</h1>
+  <div id="info">
+    <h2>STUDENT INFORMATION:</h2>
+    <table>
+      <tr>
+        <th>Name :</th>
+        <td id="fname1"></td>
+        <th>Reg. No / Roll No:</th>
+        <td id="rollno1"></td>
+      </tr>
+      <tr>
+        <th>Father Name :</th>
+        <td id="faname1"></td>
+        <th>Date of Birth :</th>
+        <td id="bod1"></td>
+      </tr>
+      <tr>
+        <th>Institute Name :</th>
+        <td id="iname1"></td>
+        <th>Batch :</th>
+        <td id="batch1"></td>
+      </tr>
+      <tr>
+        <th>Exam Month-year :</th>
+        <td id="ename1"></td>
+        <th>Seat No.:</th>
+        <td id="seat1"></td>
+      </tr>
+    </table>
+  </div>
+  <div id="mark">
+    <h2>SUBJECTS MARKS</h2>
+    <table>
+      <tr>
+        <th>SR. NO.</th>
+        <th>SUBJECT NAME</th>
+        <th>PASSING MARKS</th>
+        <th>MARK OBTAINED</th>
+        <th>GRADE</th>
+      </tr>
+      <tr>
+        <td>1.</td>
+        <td>FRONT-END DEVELOPMENT</td>
+        <td>100/35</td>
+        <td id="fend1"></td>
+        <td id="grade1"></td>
+      </tr>
+      <tr>
+        <td>2.</td>
+        <td>BACK-END DEVELOPMENT</td>
+        <td>100/35</td>
+        <td id="bend1"></td>
+        <td id="grade2"></td>
+      </tr>
+      <tr>
+        <td>3.</td>
+        <td>DATA BASE</td>
+        <td>100/35</td>
+        <td id="dbase1"></td>
+        <td id="grade3"></td>
+      </tr>
+      <tr>
+        <td>4.</td>
+        <td>DEVOPS</td>
+        <td>100/35</td>
+        <td id="devops1"></td>
+        <td id="grade4"></td>
+      </tr>
+      <tr>
+        <td>5.</td>
+        <td>MOBILE APP DEV</td>
+        <td>100/35</td>
+        <td id="mobile1"></td>
+        <td id="grade5"></td>
+      </tr>
+    </table>
+  </div>
+  <div id="result">
+    <h2>RESULT</h2>
+    <table>
+      <tr>
+        <th>TOTAL :</th>
+        <td id="total1"></td>
+        <th>PERCENTAGE :</th>
+        <td id="per1"></td>
+      </tr>
+      <tr>
+        <th>GRADE :</th>
+        <td id="finalgrade"></td>
+        <th>PASS/FAIL :</th>
+        <td id="pf"></td>
+      </tr>
+    </table>
+  </div>
+  <div style="text-align:center; margin-top:20px;">
+    <button onclick="reset()">BACK / EDIT</button>
+    <button onclick="downloadPDF()">DOWNLOAD PDF</button>
+  </div>
+</div>
+
+<script>
+  function grade(mark){
+    if(mark>=80) return "A+";
+    else if(mark>=70) return "A";
+    else if(mark>=60) return "B+";
+    else if(mark>=50) return "B";
+    else if(mark>=35) return "C";
+    else return "F";
+  }
+
+  function submit(){
+    let a = document.getElementById("fname").value.trim();
+    let b = document.getElementById("rollno").value.trim();
+    let c = document.getElementById("faname").value.trim();
+    let d = document.getElementById("bod").value.trim();
+    let e = document.getElementById("iname").value.trim();
+    let f = document.getElementById("batch").value.trim();
+    let g = document.getElementById("ename").value.trim();
+    let h = document.getElementById("seat").value.trim();
+
+    let fend = Number(document.getElementById("fend").value);
+    let bend = Number(document.getElementById("bend").value);
+    let dbase = Number(document.getElementById("dbase").value);
+    let devops = Number(document.getElementById("devops").value);
+    let mobile = Number(document.getElementById("mobile").value);
+
+    if(!a || !b || !c || !d || !e || !f || !g || !h) {
+      alert("Please fill all student information.");
+      return;
+    }
+    if([fend, bend, dbase, devops, mobile].some(m => isNaN(m) || m<0 || m>100)) {
+      alert("Please enter valid marks (0-100) in all subjects.");
+      return;
+    }
+
+    let total = fend + bend + dbase + devops + mobile;
+    let per = (total/500)*100;
+
+    document.getElementById("fname1").innerText = a;
+    document.getElementById("rollno1").innerText = b;
+    document.getElementById("faname1").innerText = c;
+    document.getElementById("bod1").innerText = d;
+    document.getElementById("iname1").innerText = e;
+    document.getElementById("batch1").innerText = f;
+    document.getElementById("ename1").innerText = g;
+    document.getElementById("seat1").innerText = h;
+
+    document.getElementById("fend1").innerText = fend;
+    document.getElementById("bend1").innerText = bend;
+    document.getElementById("dbase1").innerText = dbase;
+    document.getElementById("devops1").innerText = devops;
+    document.getElementById("mobile1").innerText = mobile;
+
+    document.getElementById("grade1").innerText = grade(fend);
+    document.getElementById("grade2").innerText = grade(bend);
+    document.getElementById("grade3").innerText = grade(dbase);
+    document.getElementById("grade4").innerText = grade(devops);
+    document.getElementById("grade5").innerText = grade(mobile);
+
+    document.getElementById("total1").innerText = total + "/500";
+    document.getElementById("per1").innerText = per.toFixed(2) + "%";
+
+    let finalgrade;
+    if(per>=80) finalgrade="A+";
+    else if(per>=70) finalgrade="A";
+    else if(per>=60) finalgrade="B+";
+    else if(per>=50) finalgrade="B";
+    else if(per>=35) finalgrade="C";
+    else finalgrade="F";
+
+    document.getElementById("finalgrade").innerText = finalgrade;
+
+    let passfail = (fend>=35 && bend>=35 && dbase>=35 && devops>=35 && mobile>=35) ? "PASS" : "FAIL";
+    document.getElementById("pf").innerText = passfail;
+    document.getElementById("pf").style.color = passfail === "PASS" ? "green" : "red";
+
+    document.getElementById("main").style.display = "none";
+    document.getElementById("main1").style.display = "block";
+  }
+
+  function reset(){
+    document.getElementById("main").style.display = "block";
+    document.getElementById("main1").style.display = "none";
+
+    // clear inputs
+    let inputs = document.querySelectorAll("#main input");
+    inputs.forEach(input => input.value = "");
+  }
+
+  async function downloadPDF(){
+    const element = document.getElementById("main1");
+    if(element.style.display === "none") {
+      alert("Please submit the form first.");
+      return;
+    }
+
+    const canvas = await html2canvas(element, {scale: 2});
+    const imgData = canvas.toDataURL('image/png');
+
+    const pdf = new window.jspdf.jsPDF('p', 'pt', [canvas.width, canvas.height]);
+    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+    pdf.save('marksheet.pdf');
+  }
+</script>
+</body>
+</html>
